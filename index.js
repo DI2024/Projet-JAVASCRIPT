@@ -1,7 +1,7 @@
-function Calc(a,b){
+function Calculer(a,b){
 
 let somme = a+b;
 return somme;
 
 }
-console.log(Calc(6,18));
+console.log(Calculer(6,18));
