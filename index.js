@@ -1,7 +1,7 @@
-function Calc(x,y){
+function Calc(a,b){
 
-let s = x+y;
+let s = a+b;
 return s;
 
 }
-console.log(Calc(6,6));
+console.log(Calc(6,18));
