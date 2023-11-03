@@ -10,4 +10,7 @@ function inverseString(str) {
 
          var exp2 = inverseString("WayToLearnX");
          console.log(exp2);
+
+         var exp3 = inverseString("DIDI");
+         console.log(exp3);
          
