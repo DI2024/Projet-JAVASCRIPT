@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+    <title>Student Table</title>
+</head>
+<body>
+
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Age</th>
+                <th>Note</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be added here dynamically -->
+        </tbody>
+    </table>
+
+    <button onclick="addStudent()">Add Student</button>
+
+    <script>
+        function addStudent() {
+            var nom = prompt("Nom:");
+            var prenom = prompt("Prénom:");
+            var age = prompt("Age:");
+            var note = parseFloat(prompt("Note:"));
+
+            if (isNaN(note)) {
+                alert("Invalid input. Please enter a valid note.");
+                return;
+            }
+
+            var table = document.getElementById("studentTable").getElementsByTagName('tbody')[0];
+            var newRow = table.insertRow(0); // Insert at the beginning
+
+            var nomCell = newRow.insertCell(0);
+            var prenomCell = newRow.insertCell(1);
+            var ageCell = newRow.insertCell(2);
+            var noteCell = newRow.insertCell(3);
+            var statusCell = newRow.insertCell(4);
+
+            nomCell.innerHTML = nom;
+            prenomCell.innerHTML = prenom;
+            ageCell.innerHTML = age;
+            noteCell.innerHTML = note;
+
+            if (note < 10) {
+                statusCell.innerHTML = "Fail";
+            } else {
+                statusCell.innerHTML = "Admis";
+            }
+
+            // Sort the table by the "Note" column in descending order
+            var rows = table.rows;
+            for (var i = 0; i < rows.length - 1; i++) {
+                for (var j = 0; j < rows.length - 1 - i; j++) {
+                    var x = parseFloat(rows[j].cells[3].innerHTML);
+                    var y = parseFloat(rows[j + 1].cells[3].innerHTML);
+                    if (x < y) {
+                        var temp = rows[j];
+                        rows[j] = rows[j + 1];
+                        rows[j + 1] = temp;
+                    }
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
