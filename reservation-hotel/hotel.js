@@ -1,18 +1,13 @@
-const readline = require('readline');
+const prompt = require('prompt-sync')();
 
-let chambresHotel = {
-  1: { numero: 1, type: "simple", prixParNuit: 50 },
-  2: { numero: 2, type: "double", prixParNuit: 80 },
-  3: { numero: 3, type: "suite", prixParNuit: 120 },
+const chambresHotel = {
+  1: { numero: 1, type: "simple", prixParNuit: "500 DH" },
+  2: { numero: 2, type: "double", prixParNuit: "800  DH" },
+  3: { numero: 3, type: "suite", prixParNuit: "1200 DH" },
   // Add more rooms as needed
 };
 
-let reservations = [];
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+const reservations = [];
 
 function afficherMenu() {
   console.log("\nMenu:");
@@ -24,8 +19,8 @@ function afficherMenu() {
 
 function afficher_chambres_disponibles() {
   console.log("\nChambres disponibles :");
-  for (let numeroChambre in chambresHotel) {
-    let chambre = chambresHotel[numeroChambre];
+  for (const numeroChambre in chambresHotel) {
+    const chambre = chambresHotel[numeroChambre];
     console.log(
       `Chambre ${chambre.numero} - Type: ${chambre.type}, Prix par nuit: ${chambre.prixParNuit}`
     );
@@ -34,57 +29,82 @@ function afficher_chambres_disponibles() {
 
 function afficher_reservations() {
   console.log("\nRéservations en cours :");
-  for (let reservation of reservations) {
+  for (const reservation of reservations) {
     console.log(
       `Client: ${reservation.nomClient}, Chambre: ${reservation.numeroChambre}, Dates: ${reservation.dateDebut} à ${reservation.dateFin}`
     );
   }
 }
 
+function validateDate(dateString) {
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+  return regex.test(dateString);
+}
+
 function effectuer_reservation() {
-  rl.question("Entrez votre nom : ", (nomClient) => {
-    rl.question("Entrez le numéro de la chambre : ", (numeroChambre) => {
-      rl.question("Entrez la date de début de la réservation (format YYYY-MM-DD) : ", (dateDebut) => {
-        rl.question("Entrez la date de fin de la réservation (format YYYY-MM-DD) : ", (dateFin) => {
-          // Rest of your code for reservation
-          let chambre = chambresHotel[numeroChambre];
-          if (!chambre) {
-            console.log("Cette chambre n'existe pas.");
-            rl.close();
-            return;
-          }
+  const nomClient = prompt("Entrez votre nom : ");
 
-          for (let reservation of reservations) {
-            if (
-              reservation.numeroChambre === numeroChambre &&
-              ((dateDebut >= reservation.dateDebut && dateDebut <= reservation.dateFin) ||
-                (dateFin >= reservation.dateDebut && dateFin <= reservation.dateFin))
-            ) {
-              console.log("La chambre n'est pas disponible pour les dates choisies.");
-              rl.close();
-              return;
-            }
-          }
+  let numeroChambre;
+  while (true) {
+    numeroChambre = prompt("Entrez le numéro de la chambre : ");
+    if (chambresHotel[numeroChambre]) {
+      break;
+    } else {
+      console.log("Cette chambre n'existe pas.");
+    }
+  }
 
-          reservations.push({
-            nomClient: nomClient,
-            numeroChambre: numeroChambre,
-            dateDebut: dateDebut,
-            dateFin: dateFin,
-          });
+  let dateDebut, dateFin;
+  while (true) {
+    dateDebut = prompt("Entrez la date de début de la réservation (format YYYY-MM-DD) : ");
+    if (validateDate(dateDebut)) {
+      break;
+    } else {
+      console.log("Format de date incorrect. Veuillez utiliser le format YYYY-MM-DD.");
+    }
+  }
 
-          console.log(`Réservation effectuée pour ${nomClient}, Chambre ${numeroChambre}.`);
-          rl.close();
-        });
-      });
-    });
+  while (true) {
+    dateFin = prompt("Entrez la date de fin de la réservation (format YYYY-MM-DD) : ");
+    if (validateDate(dateFin)) {
+      break;
+    } else {
+      console.log("Format de date incorrect. Veuillez utiliser le format YYYY-MM-DD.");
+    }
+  }
+
+  // Check for overlapping reservations
+  const chambre = chambresHotel[numeroChambre];
+  if (!chambre) {
+    console.log("Cette chambre n'existe pas.");
+    return;
+  }
+
+  for (const reservation of reservations) {
+    if (
+      reservation.numeroChambre === numeroChambre &&
+      ((dateDebut >= reservation.dateDebut && dateDebut <= reservation.dateFin) ||
+        (dateFin >= reservation.dateDebut && dateFin <= reservation.dateFin))
+    ) {
+      console.log("La chambre n'est pas disponible pour les dates choisies.");
+      return;
+    }
+  }
+
+  reservations.push({
+    nomClient: nomClient,
+    numeroChambre: numeroChambre,
+    dateDebut: dateDebut,
+    dateFin: dateFin,
   });
+
+  console.log(`Réservation effectuée pour ${nomClient}, Chambre ${numeroChambre}.`);
 }
 
 function main() {
-  afficherMenu();
-
-  rl.question("Choisissez une option (1-4) : ", (choix) => {
+  while (true) {
+    afficherMenu();
+    const choix = prompt("Choisissez une option (1-4) : ");
     switch (choix) {
       case '1':
         afficher_chambres_disponibles();
@@ -97,14 +117,11 @@ function main() {
         break;
       case '4':
         console.log("Au revoir !");
-        rl.close();
         return;
       default:
         console.log("Option invalide. Veuillez choisir une option valide.");
     }
-
-    main(); // Show the menu again
-  });
+  }
 }
 
 // Run the program
